@@ -16,13 +16,11 @@ public class ReverseNodeString {
     }
 
     private static boolean checkIsCanReverse(SingleNode doubleNode) {
-        int index = 0;
         SingleNode slowNode = doubleNode;
         SingleNode fastNode = doubleNode;
-        while (index < doubleNode.length()/2) {
+        while (fastNode!=null && fastNode.next()!=null ) {
             slowNode=slowNode.next();
             fastNode=fastNode.next().next();
-            index++;
         }
         slowNode=reverseNode(slowNode);
         fastNode=doubleNode;
@@ -37,14 +35,15 @@ public class ReverseNodeString {
     }
 
     private static SingleNode reverseNode(SingleNode baseNode) {
+        SingleNode head  = baseNode;
         //反转node
-        SingleNode temp = null;
-        SingleNode prev = null;
-        while (baseNode != null) {
-            temp=baseNode.next();
-            baseNode.next(prev);
-            prev=baseNode;
-            baseNode = temp;
+        SingleNode temp=null;
+        SingleNode prev=null;
+        while (head != null) {
+            temp=head.next();
+            head.next(prev);
+            prev=head;
+            head=temp;
         }
         return prev;
     }
@@ -53,8 +52,9 @@ public class ReverseNodeString {
 
     private static SingleNode createDoubleNode() {
         return new SingleNode(0,
-                        new SingleNode(2,
+                        new SingleNode(1,
+                            new SingleNode(2,
                                         new SingleNode(1,
-                                                new SingleNode(0, null))));
+                                                new SingleNode(0, null)))));
     }
 }
