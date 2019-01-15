@@ -15,7 +15,7 @@ public final class CharMatcherGuaua {
 
 
     public static void main(String[] args) {
-        test1();
+        //test1();
         test2();
     }
 

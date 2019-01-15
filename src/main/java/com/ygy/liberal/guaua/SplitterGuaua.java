@@ -15,7 +15,7 @@ public class SplitterGuaua {
         Splitter splitter=Splitter.on(",").trimResults();
         test1(splitter);
         test2(splitter);
-        test3(Splitter.on("#").trimResults());
+        //test3(Splitter.on("#").trimResults());
     }
 
     //分割字符串
