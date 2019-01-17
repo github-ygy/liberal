@@ -5,26 +5,70 @@ import com.ygy.liberal.arithmetic.SingleNode;
 /**
  * Created by guoyao on 2019/1/15.
  * 链表操作
+ * * 1.单链表反转
+ * 2.链表中环的检测
+ * 3.两个有序链表的合并
+ * 4.删除链表倒数第n个节点
+ * 5.求链表的中间节点
  */
 public class ListNodeOperate {
 
     public static void main(String[] args) {
-        SingleNode doubleNode=createDoubleNode(new int[]{1,2,2,1});
-        printNode(doubleNode);
+        SingleNode head=createDoubleNode(new int[]{1,3,4,5});
+        printNode(head);
+
         //校验回文
-        //System.out.println(checkIsCanReverse(doubleNode));
-        //反转链表
-        //printNode(reverseNode(doubleNode));
+        //System.out.println(checkIsCanReverse(head));
+        //1.反转链表
+        //printNode(reverseNode(head));
+        //2.校验环
+        SingleNode last=getLastNode(head);
+        last.next(head);
+        System.out.println(checkIsRing(head));
+    }
+
+    private static SingleNode getLastNode(SingleNode doubleNode) {
+        SingleNode temp = doubleNode;
+        while (temp.next() != null) {
+            temp=temp.next();
+        }
+        return temp;
+    }
+
+    private static boolean checkIsRing(SingleNode singleNode) {
+        if (singleNode == null) {
+            return false;
+        }
+        SingleNode slow = singleNode ;
+        SingleNode fast = singleNode;
+        while (fast != null && fast.next() != null) {
+            slow=slow.next();
+            fast=fast.next().next();
+            if (slow == fast) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
-
-    private static void printNode(SingleNode singleNode) {
-        while (singleNode != null) {
-            System.out.print(singleNode.value());
-            singleNode=singleNode.next();
+    /**
+     * 反转链表
+     * @param baseNode
+     * @return
+     */
+    private static SingleNode reverseNode(SingleNode baseNode) {
+        SingleNode head  = baseNode;
+        //反转node
+        SingleNode temp=null;
+        SingleNode prev=null;
+        while (head != null) {
+            temp=head.next();
+            head.next(prev);
+            prev=head;
+            head=temp;
         }
-        System.out.println();
+        return prev;
     }
 
 
@@ -52,24 +96,7 @@ public class ListNodeOperate {
         return true;
     }
 
-    /**
-     * 反转链表
-     * @param baseNode
-     * @return
-     */
-    private static SingleNode reverseNode(SingleNode baseNode) {
-        SingleNode head  = baseNode;
-        //反转node
-        SingleNode temp=null;
-        SingleNode prev=null;
-        while (head != null) {
-            temp=head.next();
-            head.next(prev);
-            prev=head;
-            head=temp;
-        }
-        return prev;
-    }
+
 
     private static SingleNode createDoubleNode(int[] ints) {
         SingleNode head= null;
@@ -84,5 +111,13 @@ public class ListNodeOperate {
             temp=temp.next();
         }
         return head;
+    }
+
+    private static void printNode(SingleNode singleNode) {
+        while (singleNode != null) {
+            System.out.print(singleNode.value());
+            singleNode=singleNode.next();
+        }
+        System.out.println();
     }
 }
