@@ -14,17 +14,41 @@ import com.ygy.liberal.arithmetic.SingleNode;
 public class ListNodeOperate {
 
     public static void main(String[] args) {
-        SingleNode head=createDoubleNode(new int[]{1,3,4,5});
+        SingleNode head=createDoubleNode(new int[]{1,4,5,7});
         printNode(head);
-
         //校验回文
         //System.out.println(checkIsCanReverse(head));
         //1.反转链表
         //printNode(reverseNode(head));
         //2.校验环
-        SingleNode last=getLastNode(head);
-        last.next(head);
-        System.out.println(checkIsRing(head));
+        //SingleNode last=getLastNode(head);
+        //last.next(head);
+        //System.out.println(checkIsRing(head));
+        //3.两个有序链表的合并
+        SingleNode head2=createDoubleNode(new int[]{2, 3,  8});
+        printNode(mergeOrderNode(head, head2));
+
+    }
+
+    private static SingleNode mergeOrderNode(SingleNode firstOrder, SingleNode secondOrder) {
+        SingleNode head=new SingleNode(Integer.MIN_VALUE, null);
+        SingleNode temp = head ;
+        while (firstOrder != null && secondOrder != null) {
+            if (firstOrder.value() > secondOrder.value()) {
+                temp = temp.next(secondOrder);
+                secondOrder=secondOrder.next();
+            } else {
+                temp=temp.next(firstOrder);
+                firstOrder=firstOrder.next();
+            }
+        }
+        if (firstOrder != null) {
+            temp.next(firstOrder);
+        }
+        if (secondOrder != null) {
+            temp.next(secondOrder);
+        }
+        return head.next();
     }
 
     private static SingleNode getLastNode(SingleNode doubleNode) {
