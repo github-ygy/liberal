@@ -7,8 +7,10 @@ public class TestSort {
 
 
     public static void main(String[] args) {
-        int[] datas={1, 3, 4, 2, 5, 6};
+        int[] datas={1, 5, 4, 3, 6, 2};
         print(new BubbleSort().sort(datas));
+        print(new InsertSort().sort(datas));
+        print(new InsertSort().reSort(datas));
     }
 
     public static void print(int[] datas) {
