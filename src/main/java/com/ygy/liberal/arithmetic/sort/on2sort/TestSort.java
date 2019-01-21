@@ -11,6 +11,8 @@ public class TestSort {
         print(new BubbleSort().reSort(createDatas()));
         print(new InsertSort().sort(createDatas()));
         print(new InsertSort().reSort(createDatas()));
+        print(new SelectSort().sort(createDatas()));
+        print(new SelectSort().reSort(createDatas()));
     }
 
     private static int[] createDatas() {
