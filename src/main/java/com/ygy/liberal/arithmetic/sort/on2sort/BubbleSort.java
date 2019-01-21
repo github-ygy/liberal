@@ -28,4 +28,26 @@ public class BubbleSort implements Sort{
         }
         return datas;
     }
+
+    @Override
+    public int[] reSort(int[] datas) {
+        if (datas.length <= 1) {
+            return datas;
+        }
+        boolean flag=false;
+        for (int i = 0;i<datas.length;i++) {
+            for (int j =0;j<datas.length - i- 1;j++) {
+                if (datas[j] < datas[j + 1]) {
+                    int temp=datas[j + 1];
+                    datas[j + 1]=datas[j];
+                    datas[j]=temp;
+                    flag=true;
+                }
+            }
+            if (!flag) {
+                break;
+            }
+        }
+        return datas;
+    }
 }

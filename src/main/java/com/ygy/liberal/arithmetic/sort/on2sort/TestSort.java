@@ -7,10 +7,14 @@ public class TestSort {
 
 
     public static void main(String[] args) {
-        int[] datas={1, 5, 4, 3, 6, 2};
-        print(new BubbleSort().sort(datas));
-        print(new InsertSort().sort(datas));
-        print(new InsertSort().reSort(datas));
+        print(new BubbleSort().sort(createDatas()));
+        print(new BubbleSort().reSort(createDatas()));
+        print(new InsertSort().sort(createDatas()));
+        print(new InsertSort().reSort(createDatas()));
+    }
+
+    private static int[] createDatas() {
+        return new int[]{1, 5, 4, 3, 6, 2};
     }
 
     public static void print(int[] datas) {
