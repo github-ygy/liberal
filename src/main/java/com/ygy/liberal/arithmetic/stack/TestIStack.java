@@ -9,6 +9,7 @@ public class TestIStack {
 
     public static void main(String[] args) {
         testPush();
+        testPop();
     }
 
     public static IStack createArrayStack(int count) {
@@ -21,10 +22,10 @@ public class TestIStack {
         stack.push(3);
         stack.push(2);
         stack.push(1);
-        Preconditions.checkArgument(stack.pop() == 4);
-        Preconditions.checkArgument(stack.pop() == 3);
-        Preconditions.checkArgument(stack.pop() == 2);
         Preconditions.checkArgument(stack.pop() == 1);
+        Preconditions.checkArgument(stack.pop() == 2);
+        Preconditions.checkArgument(stack.pop() == 3);
+        Preconditions.checkArgument(stack.pop() == 4);
         Preconditions.checkArgument(stack.pop() == Integer.MIN_VALUE);
 
     }
