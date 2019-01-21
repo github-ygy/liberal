@@ -13,7 +13,7 @@ public class TestIStack {
     }
 
     public static IStack createArrayStack(int count) {
-        return new ArrayStack(count);
+        return new LinkedStack(count);
     }
 
     public static void testPop() {
