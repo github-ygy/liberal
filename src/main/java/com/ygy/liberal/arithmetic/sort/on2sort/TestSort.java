@@ -1,6 +1,7 @@
 package com.ygy.liberal.arithmetic.sort.on2sort;
 
 import com.ygy.liberal.arithmetic.sort.onlogsort.MergeSort;
+import com.ygy.liberal.arithmetic.sort.onlogsort.QuickSort;
 
 /**
  * Created by guoyao on 2019/1/21.
@@ -16,6 +17,7 @@ public class TestSort {
         print(new SelectSort().sort(createDatas()));
         print(new SelectSort().reSort(createDatas()));
         print(new MergeSort().sort(createDatas()));
+        print(new QuickSort().sort(createDatas()));
     }
 
     private static int[] createDatas() {
