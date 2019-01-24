@@ -1,5 +1,8 @@
-package com.ygy.liberal.arithmetic.sort.on2sort;
+package com.ygy.liberal.arithmetic.sort;
 
+import com.ygy.liberal.arithmetic.sort.on2sort.BubbleSort;
+import com.ygy.liberal.arithmetic.sort.on2sort.InsertSort;
+import com.ygy.liberal.arithmetic.sort.on2sort.SelectSort;
 import com.ygy.liberal.arithmetic.sort.onlogsort.MergeSort;
 import com.ygy.liberal.arithmetic.sort.onlogsort.QuickSort;
 

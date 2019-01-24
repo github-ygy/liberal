@@ -1,4 +1,4 @@
-package com.ygy.liberal.arithmetic.sort.on2sort;
+package com.ygy.liberal.arithmetic.sort;
 
 /**
  * Created by guoyao on 2019/1/21.

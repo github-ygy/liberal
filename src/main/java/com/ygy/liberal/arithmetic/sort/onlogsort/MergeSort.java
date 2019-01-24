@@ -1,7 +1,6 @@
 package com.ygy.liberal.arithmetic.sort.onlogsort;
 
-import com.ygy.liberal.arithmetic.sort.on2sort.Sort;
-import com.ygy.liberal.arithmetic.sort.on2sort.TestSort;
+import com.ygy.liberal.arithmetic.sort.Sort;
 
 /**
  * Created by guoyao on 2019/1/23.

@@ -1,10 +1,12 @@
 package com.ygy.liberal.arithmetic.sort.on2sort;
 
+import com.ygy.liberal.arithmetic.sort.Sort;
+
 /**
  * Created by guoyao on 2019/1/21.
  * 插入排序
  */
-public class InsertSort implements Sort{
+public class InsertSort implements Sort {
 
 
     @Override
