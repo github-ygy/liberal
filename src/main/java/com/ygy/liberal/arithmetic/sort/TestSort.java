@@ -1,5 +1,6 @@
 package com.ygy.liberal.arithmetic.sort;
 
+import com.ygy.liberal.arithmetic.demo.FindTopN;
 import com.ygy.liberal.arithmetic.sort.on2sort.BubbleSort;
 import com.ygy.liberal.arithmetic.sort.on2sort.InsertSort;
 import com.ygy.liberal.arithmetic.sort.on2sort.SelectSort;
@@ -21,6 +22,9 @@ public class TestSort {
         print(new SelectSort().reSort(createDatas()));
         print(new MergeSort().sort(createDatas()));
         print(new QuickSort().sort(createDatas()));
+
+
+        System.out.println(new FindTopN().findTopN(createDatas(), 1));
     }
 
     private static int[] createDatas() {
