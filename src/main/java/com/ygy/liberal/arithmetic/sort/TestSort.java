@@ -6,6 +6,7 @@ import com.ygy.liberal.arithmetic.sort.on2sort.InsertSort;
 import com.ygy.liberal.arithmetic.sort.on2sort.SelectSort;
 import com.ygy.liberal.arithmetic.sort.onlogsort.MergeSort;
 import com.ygy.liberal.arithmetic.sort.onlogsort.QuickSort;
+import com.ygy.liberal.arithmetic.sort.onsort.CountSort;
 
 /**
  * Created by guoyao on 2019/1/21.
@@ -22,8 +23,9 @@ public class TestSort {
         print(new SelectSort().reSort(createDatas()));
         print(new MergeSort().sort(createDatas()));
         print(new QuickSort().sort(createDatas()));
+        print(new CountSort().sort(createDatas()));
 
-
+        //find top n
         System.out.println(new FindTopN().findTopN(createDatas(), 1));
     }
 
