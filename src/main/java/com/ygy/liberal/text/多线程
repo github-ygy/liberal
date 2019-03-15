@@ -3,13 +3,7 @@
     为了让各个线程都有执行的机会，就需要轮转使用CPU。
     不同的线程切换使用CPU发生的切换数据等就是上下文切换
 
-java内存模型中线程间如何保持通信
-   内存模型两种方式：共享内存和消息传递
-   java使用共享内存:
-   在共享内存的并发模型里，线程之间共享程序的公共状态，线程之间通过写-读内存中的公共状态来隐式进行通信。
-   在消息传递的并发模型里，线程之间没有公共状态，线程之间必须通过明确的发送消息来显式进行通信
-   线程之间的共享变量存储在主内存（main memory）中，每个线程都有一个私有的本地内存（local memory），
-   本地内存中存储了该线程以读/写共享变量的副本
+j
 
 死锁是怎样产生的
     所谓死锁，是指多个进程在运行过程中因争夺资源而造成的一种僵局，
@@ -40,11 +34,44 @@ threadLocal的应用与实现原理
     不主动释放就会造成资源泄漏，所以ThreadLocalMap中的key的引用是弱引用，这样，当threadlocal被gc回收时，
     如果线程中的ThreadLocalMap有被其它Threadlocal调用，则线程中的资源也会被回收。否则就会有内存泄漏的问题。
 
+如何将threadlocal在线程池中传递？
+    TransmittableThreadLocal进行池化复用的线程池传递。
+    用ttlrunnable增强runnable，构造runnable时，将静态容器hold(InheritableThreadLocal<Map<TransmittableThreadLocal<?>, ?)
+    中存储的TransmittableThreadLocal keys备份copy传递后传递到当前线程，
+    当runnable执行完成后，恢复copy的数据。(holder copy后的添加的数据需要在当前线程中清除)
+    这样保证该子线程的数据都是parent所传递的数据
 
-几种线程池的应用，线程池如何实现的？具体参数的意义？
+线程池如何实现的？具体参数的意义？
+    流程:
+        a.判断线程池里的核心线程是否都在执行任务，
+            如果不是（核心线程空闲或者还有核心线程没有被创建）则创建一个新的工作线程来执行任务。
+            如果核心线程都在执行任务，则进入下个流程。
+        b.线程池判断工作队列是否已满，
+            如果工作队列没有满，则将新提交的任务存储在这个工作队列里。
+            如果工作队列满了，则进入下个流程。
+        c.判断线程池里的线程是否都处于工作状态，
+            如果没有，则创建一个新的工作线程来执行任务。
+            如果已经满了，则交给饱和策略来处理这个任务。
+    线程封装对象worker是Thread子类，while循环从队列中获取数据
+    corePoolSize - 池中所保存的线程数，包括空闲线程。
+    maximumPoolSize-池中允许的最大线程数。
+    workQueue - 执行前用于保持任务的队列
 
 线程池的增长策略与拒绝策略？
-
+    增长策略
+        workQueue - 执行前用于保持任务的队列
+            a.直接提交，队里的数据只有被取走才能新增即数据直接提交线程处理(SynchronousQueue)
+            b.无界队列，即无限排队新任务(LinkedBlockingQueue,PriorityBlockingQuene：具有优先级的无界阻塞队列)
+            c.有界队列，超过容量限制需要提交线程处理(ArrayBlockingQueue)
+        当正在执行任务数少于corePoolSize时，会直接新建线程执行任务，
+        当正在执行任务数大于等于corePoolSize，之后的任务会进入workqueue排队
+        当workqueue排队数已满时，如果正在执行的数据没有达到maximumPoolSize则新建线程执行
+    拒绝策略
+        当workqueue已满，且当前任务执行数量达到了maximumPoolSize则执行拒绝策略
+        a.CallerRunsPolicy 直接使用当前线程直接执行
+        b.AbortPolicy 直接抛出异常
+        c.DiscardPolicy 不做任何处理，直接抛弃
+        d.DiscardOldestPolicy lru将工作队列的头部任务抛弃，此任务保留
 
 CAS缺点：
     ABA问题：
@@ -64,6 +91,16 @@ CopyOnWriteArrayList的实现原理和思想?
     读写分离，读和写分开
     最终一致性
     使用另外开辟空间的思路，来解决并发冲突
+
+fork join是什么？
+
+
+
+CLH,MCS锁原理
+
+
+
+
 
 
 
