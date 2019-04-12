@@ -1,0 +1,108 @@
+dubbo是如何进行服务注册发现的？
+    1.基于注册 中心的事件通知（订阅与发布），一切支持事件订阅与发布的框架都可以作为Dubbo注册中心的选型。
+    2.服务提供者在暴露服务时，会向注册中心注册自己，具体就是在${service interface}/providers目录下添加 一个节点（临时），服务提供者需要与注册中心保持长连接，一旦连接断掉（重试连接）会话信息失效后，注册中心会认为该服务提供者不可用（提供者节点会被删除）。
+    3.消费者在启动时，首先也会向注册中心注册自己，具体在${interface interface}/consumers目录下创建一个节点。
+    4.消费者订阅${service interface}/ [ providers、configurators、routers ]三个目录，这些目录下的节点删除、新增事件都胡通知消费者，根据通知，重构服务调用器(Invoker)。
+
+dubbo和springcloud http对比
+    1.dubbo 压缩二进制协议需要依赖存根，如果存在变动容易出现序列化失败
+    2.springcloud不需要共享存根，用json传输即可，但是性能降低，比较容易进行横向扩展，对程序有一定的侵入性
+
+
+dubbo的负载均衡是怎么做的？
+    1.随机负载
+      a.首先求所有服务提供者的总权重，并判断每个服务提供者的权重是否相同。
+      b.如果提供者之间的权重不相同，则产生一个随机数(0-totalWeight)，视为offset,然后依次用offset减去服务提供者的权重，如果减去(offset - provider.weight < 0),则该invoker命中。
+      c.如果服务提供者的权重相同，则随机产生[0-invoker.size)即可。
+    2.加权轮训
+        a.构建ConcurrentMap< String, AtomicPositiveInteger> sequences中的key,以interface+methodname为键，里面存储的是当前序号（轮询）。
+        b.构建LinkedHashMap< Invoker< T>, IntegerWrapper>存储结构，通过遍历所有Invoker，构建每个Invoker的权重，与此同时算出总权重，并且得出所有服务提供者权重是否相同。
+        c.获取当前的轮询序号，用于取模。
+        d.如果服务提供者之间的权重有差别，需要按权重轮询，实现方式是：
+            1）用当前轮询序号与服务提供者总权重取模，余数为mod。
+            2）然后从0循环直到最大权重，针对每一次循环，按同一顺序遍历所有服务提供者，
+            如果mod等于0并且对应的Invoker的权重计算器大于0，则选择该服务提供者；
+            否则，mod–,invoker对应的权重减一，
+            权重是临时比那里LinkedHashMap< Invoker< T>, IntegerWrapper>。
+            由于外层循环的次数为所有服务提供者的最大权重，内层循环当mod等于0时，
+            肯定会有一个服务提供者的权重计数器大于0,而返回对应的服务提供者。
+            返回的服务提供者是第一个满足的服务提供者，后续的服务提供者在下一次就会有机会，
+             因为下一次mod会增大1，后续的服务提供者通过轮询会被选择，选择的机会，取决于权重的大小。
+        e.如果各服务提供者权重相同，则直接对服务提供者取模即可，轮询后递增
+     3.最小调用数
+         a.如果当前遍历的服务提供者的活跃数等于leastActive ，则将总权重想加，并在leastIndexs中记录服务提供者序号。
+         b.如果最小活跃连接数的服务提供者数量只有一个，则直接返回该服务提供者。
+         c.如果最小活跃连接数的服务提供者有多个，则使用加权随机算法选取服务提供者
+
+dubbo的服务容错是怎么做的？
+    failover=com.alibaba.dubbo.rpc.cluster.support.FailoverCluster
+        失败后自动选择其他服务提供者进行重试，重试次数由retries属性设置
+    failfast=com.alibaba.dubbo.rpc.cluster.support.FailfastCluster
+        快速失败，服务调用失败后立马抛出异常，不进行重试
+    failsafe=com.alibaba.dubbo.rpc.cluster.support.FailsafeCluster
+        服务调用失败后，只打印错误日志，然后返回服务调用成功。
+    failback=com.alibaba.dubbo.rpc.cluster.support.FailbackCluster
+        调用失败后，返回成功，但会在后台定时重试，重试次数
+    forking=com.alibaba.dubbo.rpc.cluster.support.ForkingCluster
+        并行调用多个服务提供者，当一个服务提供者返回成功，则返回成功。
+    available=com.alibaba.dubbo.rpc.cluster.support.AvailableCluster
+        选择集群第一个可用的服务提供者
+    broadcast=com.alibaba.dubbo.rpc.cluster.support.BroadcastCluster(用户刷新缓存)
+        广播调用，将调用所有服务提供者，一个服务调用者失败，并不会熔断，并且一个服务提供者调用失败，整个调用认为失败。
+
+dubbo的超时是如何实现服务端客户端超时的？
+
+
+zookeeper如何保证主从节点的状态同步
+    1.所有节点初始状态都是Follower角色
+    2.超时时间内没有收到Leader的请求则转换为Candidate进行选举
+    3.Candidate收到大多数节点的选票则转换为Leader；
+    4.Leader收到更高任期的请求则转换为Follower
+
+follow、candidates、leader状态的工作机制？
+    Followers
+        响应来自Leader和Candidate的RPC请求
+        如果在选举超时周期内没有收到AppendEntries的请求或者给Candidate投票，转换为Candidate角色
+
+    Candidates
+        转换为candidate角色，开始选举：
+            递增currentTerm
+            给自己投票
+            重置选举时间
+            发送RequestVote给其他所有节点
+    如果收到了大多数节点的选票，转换为Leader节点
+    如果收到Leader节点的AppendEntries请求，转换为Follower节点
+    如果选举超时，重新开始新一轮的选举转化
+    超时时间随机，避免同一时间多个Candidates都无法成为leader的问题
+
+candidate成为leader的必要条件?
+    1.获得集群半数节点的同意
+    2.集群中不存在比自己步进数更高的candidate
+    3.集群中不存在其他leader
+
+    Leaders
+        一旦选举完成：发送心跳给所有节点；在空闲的周期内不断发送心跳保持Leader身份
+        如果收到客户端的请求，将日志追加到本地log，在日志被应用到状态机后响应给客户端
+        如果对于一个跟随者，最后日志条目的索引值大于等于 nextIndex，那么：发送从 nextIndex 开始的所有日志条目：
+        如果成功：更新相应跟随者的 nextIndex 和 matchIndex
+        如果因为日志不一致而失败，减少 nextIndex 重试
+        如果存在一个满足N > commitIndex的 N，并且大多数的matchIndex[i] ≥ N成立，并且log[N].term == currentTerm成立，那么令commitIndex等于这个N
+
+什么是raft?
+    分布式系统除了提升整个体统的性能外还有一个重要特征就是提高系统的可靠性。
+    提供可靠性可以理解为系统中一台或多台的机器故障不会使系统不可用（或者丢失数据）。
+    保证系统可靠性的关键就是多副本（即数据需要有备份），一旦有多副本，那么久面临多副本之间的一致性问题
+    主要包括:leader选举、日志复制、安全性
+
+
+
+
+
+
+
+
+
+
+
+
+

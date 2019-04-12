@@ -3,7 +3,6 @@
     为了让各个线程都有执行的机会，就需要轮转使用CPU。
     不同的线程切换使用CPU发生的切换数据等就是上下文切换
 
-j
 
 死锁是怎样产生的
     所谓死锁，是指多个进程在运行过程中因争夺资源而造成的一种僵局，
@@ -13,6 +12,11 @@ j
     b.请求与保持条件：一个进程因请求资源而阻塞时，对已获得资源保持不放
     c.不剥夺条件：进程获得的资源，在未完全使用完之前，不能强行剥夺
     d.循环等待条件：若干进程之间形成一种头尾相接的环形等待资源关系
+
+wait nofity的应用?
+    1.当前线程必须拥有此对象的monitor（即锁），才能调用某个对象的wait()方法能让当前线程阻塞
+    2.调用某个对象的notify()方法能够唤醒一个正在等待这个对象的monitor的线程，如果有多个线程都在等待这个对象的monitor，则只能唤醒其中一个线程；
+    3.调用notifyAll()方法能够唤醒所有正在等待这个对象的monitor的线程，唤醒的线程获得锁的概率是随机的，取决于cpu调度
 
 比较下volatile和synchronized的异同点
     volatile可见性:
@@ -28,13 +32,18 @@ j
     多个线程争抢synchronized锁对象时，会出现阻塞。
 
 threadLocal的应用与实现原理
-    threadlocal是将ThreadLocalMap放入Thread中管理，每个ThreadLocal是其中的key，这样
-    threadlocal将需要保存的资源通过自身隔离在不同线程中，实现了资源设置与获取安全，同时由于map结构是放在
-    thread中，所以thread结束gc回收时，同时也回收了存储的资源数据，但是如果使用线程池时，如果资源不使用后，
-    不主动释放就会造成资源泄漏，所以ThreadLocalMap中的key的引用是弱引用，这样，当threadlocal被gc回收时，
-    如果线程中的ThreadLocalMap有被其它Threadlocal调用，则线程中的资源也会被回收。否则就会有内存泄漏的问题。
+     threadlocal是将ThreadLocalMap放入Thread中管理，每个ThreadLocal是其中的key，这样
+     threadlocal将需要保存的资源通过自身隔离在不同线程中，实现了资源设置与获取安全，同时由于map结构是放在
+     thread中，所以thread结束gc回收时，同时也回收了存储的资源数据，但是如果使用线程池时，如果资源不使用后，
+     不主动释放就会造成资源泄漏，所以ThreadLocalMap中的key的引用是弱引用，这样，当threadlocal被gc回收时，
+     如果线程中的ThreadLocalMap有被其它Threadlocal调用，则线程中的资源也会被回收。否则就会有内存泄漏的问题。
 
-如何将threadlocal在线程池中传递？
+threadLocalMap是如何解决hash冲突问题?
+    开放寻址法
+    set时:hash计算key槽，如果为空则无冲突插入，则遍历数组，向后找到第一个空闲空间插入数据
+    get时，hash计算key槽，如果有值则冲突，进行遍历数组，找到key相同，如果找到第一个空闲空间则清除null数据同时返回空
+
+ 如何将threadlocal在线程池中传递？
     TransmittableThreadLocal进行池化复用的线程池传递。
     用ttlrunnable增强runnable，构造runnable时，将静态容器hold(InheritableThreadLocal<Map<TransmittableThreadLocal<?>, ?)
     中存储的TransmittableThreadLocal keys备份copy传递后传递到当前线程，
@@ -52,6 +61,9 @@ threadLocal的应用与实现原理
         c.判断线程池里的线程是否都处于工作状态，
             如果没有，则创建一个新的工作线程来执行任务。
             如果已经满了，则交给饱和策略来处理这个任务。
+        d.keepAliveTime如果开启允许超时或者 wc >corePoolSize
+            1.超时时间获取到数据，则继续执行
+            2.超时时间未获取到数据，则进行销毁线程
     线程封装对象worker是Thread子类，while循环从队列中获取数据
     corePoolSize - 池中所保存的线程数，包括空闲线程。
     maximumPoolSize-池中允许的最大线程数。
@@ -96,7 +108,107 @@ fork join是什么？
 
 
 
-CLH,MCS锁原理
+aqs是什么？ 博客：https://www.cnblogs.com/waterystone/p/4920797.html
+    共享变量 volatile state
+    节点状态 waitStatus 初始化0 正常状态 > 0取消状态（cancelled）< 0 有效状态
+        CANCELLED 在同步队列中等待的线程等待超时或被中断，需要从同步队列中取消该Node的结点。
+        SINGAL 处于唤醒状态，只要前继结点释放锁，就会通知标识为SIGNAL状态的后继结点的线程执行。
+        CONDITION 该标识的结点处于等待队列中，结点的线程等待在Condition上，
+        当其他线程调用了Condition的signal()方法后，CONDITION状态的结点将从等待队列转移到同步队列中，等待获取同步锁。
+        PROPAGATE 在共享模式中，该状态标识结点的线程处于可运行状态。
+    AQS定义两种资源共享方式:独占(仅一个线程)、共享(支持同时多个线程)
+        独占顶层接口:
+            tryAcquire(int)/tryRelease(int)
+                addWaiter(Node)方法:
+                    cas循环入双向链表队列尾
+                acquireQueued方法:
+                    1.找到前节点，如果前节点是head节点尝试获取资源，获取资源则结束
+                    2.未获取到资源调用park()进入waiting状态，等待unpark()或interrupt()唤醒自己；
+                    4.被唤醒后，看自己是不是有资格能拿到号。如果拿到，head指向当前结点，
+                    并返回从入队到拿到号的整个过程中是否被中断过；如果没拿到，继续流程1。
+                acquire方法:
+                    1.tryAcquire()尝试直接去获取资源，如果成功则直接返回；
+                    2.addWaiter()将该线程加入等待队列的尾部，并标记为独占模式；
+                    3.acquireQueued()使线程在等待队列中获取资源，一直获取到资源后才返回。
+                    如果在整个等待过程中被中断过，则返回true，否则返回false。
+                    4.如果线程在等待过程中被中断过，它是不响应的。
+                    只是获取资源后才再进行自我中断selfInterrupt()，将中断补上。
+                release方法
+                    1.它会释放指定量的资源，如果彻底释放了（即state=0）
+                    2.需要将自身状态变更为0，不再为活跃节点
+                    3.它会唤醒等待队列里等待队列中最前边的那个未放弃的线程来获取资源
+        共享顶层接口
+            tryAcquireShared(int)/tryReleaseShared(int)
+                doAcquireShared方法:
+                    1.循环处理，找到前节点，如果前节点是head节点尝试获取资源
+                    2.成功获取资源，则判断是否可以传播唤醒后继节点
+                    3.为获取资源则park等待被唤醒继续尝试获取资源
+                doReleaseShared方法:
+                    1.如果当前状态是signal则唤醒后面节点，修改状态为0
+                    2.如果已经是0修改状态为可传播
+                    3.如果head节点变更则继续唤醒
+
+        ReentrantLock原理:
+            非公平锁:
+                1.直接尝试获取锁资源，aqs循环获取资源
+                2.如果state为资源已被获取，则判断独占线程是否为自己state+1或失败
+            公平锁:
+                1.判断队列中是否有排队队列，如果没有尝试获取锁资源，aqs循环获取资源
+                2.如果资源已被获取，同非公平锁
+
+        Semaphore原理:
+            非公平竞争:
+                获取当前状态，如果剩余数小于0则返回失败，aps循环获取资源
+            公平竞争:
+                判断队列中是否已有排队队列，如果没有尝试获取资源，否则同非公平竞争
+
+        CountDownLatch原理
+            countDown实际是释放资源,资源释后state刚好为0时唤醒队里节点(如果有多个，则唤醒多个)
+            await实际是尝试获取资源，如果state为0时，则达到状态获取成功，否则进入队列等待
+
+
+
+
+
+
+分布式锁
+    讨论博客
+    https://mp.weixin.qq.com/s/1bPLk_VZhZ0QYNZS8LkviA
+    https://blog.csdn.net/jek123456/article/details/72954106
+    分布式锁问题的共性
+        zk锁问题
+          1.客户端1创建了znode节点 /lock ，获得了锁。
+          2.客户端1进入了长时间的GC pause。
+          3.客户端1连接到ZooKeeper的Session过期了。znode节点 /lock 被自动删除。
+          4.客户端2创建了znode节点 /lock ，从而获得了锁。
+          5.客户端1从GC pause中恢复过来，它仍然认为自己持有锁
+
+        redis锁问题
+            1.客户端1向Redis节点A, B, C, D, E发起锁请求。
+            2.各个Redis节点已经把请求结果返回给了客户端1，但客户端1在收到请求结果之前进入了长时间的GC pause。
+            3.在所有的Redis节点上，锁过期了。
+            4.客户端2在A, B, C, D, E上获取到了锁。
+            5.客户端1从GC pause从恢复，收到了前面第2步来自各个Redis节点的请求结果。客户端1认为自己成功获取到了锁。
+            6.客户端1和客户端2现在都认为自己持有了锁。
+   redis
+        1.获取当前时间。
+        2.完成 获取锁 的整个过程（与N个Redis节点交互）。
+        3.再次获取当前时间。
+        4.把两个时间相减，计算 获取锁 的过程是否消耗了太长时间，导致锁已经过期了。如果没过期，
+        5.客户端持有锁去访问共享资源。
+
+
+   zk
+      避免羊群效应
+        1.客户端调用create()方法创建名为“_locknode_/guid-lock-”的节点，需要注意的是，这里节点的创建类型需要设置为EPHEMERAL_SEQUENTIAL。
+        2.客户端调用getChildren(“_locknode_”)方法来获取所有已经创建的子节点，注意，这里不注册任何Watcher。
+        3.客户端获取到所有子节点path之后，如果发现自己在步骤1中创建的节点序号最小，那么就认为这个客户端获得了锁。
+        4.如果在步骤3中发现自己并非所有子节点中最小的，说明自己还没有获取到锁。此时客户端需要找到比自己小的那个节点，然后对其调用exist()方法，同时注册事件监听。
+        5.之后当这个被关注的节点被移除了，客户端会收到相应的通知。这个时候客户端需要再次调用getChildren(“_locknode_”)方法来获取所有已经创建的子节点，确保自己确实是最小的节点了，然后进入步骤3。
+       优势
+        1.ephemeral类型的znode自动删除的功能
+        2.已有节点创建后，ZooKeeper通过watch机制通知它，这样它就可以继续完成创建操作达到阻塞的效果
+
 
 
 

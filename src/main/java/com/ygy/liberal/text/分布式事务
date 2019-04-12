@@ -1,0 +1,53 @@
+分布式事务种类
+    基于消息实现的分布式事务；
+    基于补偿实现的分布式事务；
+    基于TCC实现的分布式事务；
+    基于SAGA实现的分布式事务；
+    基于2PC实现的分布式事务。
+
+
+
+fescar 原理
+    1.RM 资源管理器 DataSourceProxy代理拦截sql
+        a.首先会检查当前本地事务是否处于全局事务中，如果不处于，
+        直接使用默认的Statment执行，避免因引入Fescar导致非全局事务中的SQL执行性能下降。
+        处于全局事务会进行while循环重试，应对锁冲突
+        b.解析SQL，有缓存机制，因为有些SQL解析会比较耗时，
+        可能会导致在应用启动后刚开始的那段时间里处理全局事务中的SQL执行效率降低。
+        c. 对于INSERT、UPDATE、DELETE、SELECT..FOR UPDATE
+        这四种类型的sql会专门实现的SQL执行器进行处理，其它SQL直接是默认的Statment执行。
+        d.返回执行结果，如有异常则直接抛给上层业务代码进行处理。
+
+
+
+global lock
+场景： 存在一些记录需要偶然参加到全局事务，但更多情况下，其只需修改本地记录即可完成业务。
+
+问题： 使用GlobalTransaction很重型，需要TC协调，需要RM汇报、需要记录UNDOLOG，这些实际上在上诉场景都是不需要的，其需求仅仅只是：获取正确的记录值并执行对应逻辑即可
+
+实现整体思路： RM仅通过TC获取对应的锁记录状态以判断当前记录是否脏记录，若是则回滚，若否则commit,其他的额外操作都去掉
+
+实现细节：
+* 参照GlobalTransaction的注解启动形式实现GlobalLock的注解启动
+* 当GlobalTransaction及GlobalLock同时存在时，执行GlobalTransaction的逻辑
+* 参照GlobalTransactionTemplate创建GlobalLockTemplate,这里就去掉了TM里向TC注册、提交、回滚等步骤
+* 参照GlobalTransaction在RootContext及ConnectionContext标志位设立对应的GlobalLock标志位 以及相关状态判断方法
+* 改造ExecuteTemplate使得GlobalLock状态也进入到LockKey生成的逻辑，这样可以获取到相关需要检测的锁记录
+* 改造SelectForUpdateExecutor，使其在GlobalLock状态时不马上向TC查询全局锁状态，而推后到Commit前跟DML构成的LockKey合并一起查询（本修改实际没有必要，当时写的时候以为有xid重入问题，但实际并没有，不过推后合并执行或许在低冲突下能一定层度上提高性能，本修改可以撤销去掉）
+* 改造ConnectionProxy使其在Commit时判断若是GlobalLock则无需向TC注册分支及汇报分支状态，并且无需写入undolog。对于rollback无需修改，其符合现有要求。这里就去掉了undolog以及分支相关RPC
+
+
+存在问题：
+* 当没有xid时，无法通过xid获取TC地址，因此使用了TM的loadBalance选择了TC地址，有点奇怪
+* 增加了RootContext在ConnectionProxy的使用，虽然与逻辑就有使用，但这样使得ConnectionProxy可跨线程使用的目标变得更远
+
+
+
+
+
+
+//优化点
+1.LockRetryController  按照事务级别设定重试策略
+
+
+
