@@ -14,26 +14,26 @@ public class SelectSort implements Sort {
             return datas;
         }
         //找最小值换数据
-        for (int i =0;i < datas.length -1;i++) {
-            int minIndex=i;
-            int minData=datas[i];
-            for (int j = i+1;j<datas.length;j++) {
+        for (int i = 0; i < datas.length - 1; i++) {
+            int minIndex = i;
+            int minData = datas[i];
+            for (int j = i + 1; j < datas.length; j++) {
                 if (datas[j] < minData) {
-                    minIndex=j;
-                    minData=datas[j];
+                    minIndex = j;
+                    minData = datas[j];
                 }
             }
-            datas[minIndex]=datas[i];
-            datas[i]=minData;
+            datas[minIndex] = datas[i];
+            datas[i] = minData;
         }
 
         //找到小值就换
-        for (int i =0;i < datas.length -1;i++) {
-            for (int j = i+1;j<datas.length;j++) {
+        for (int i = 0; i < datas.length - 1; i++) {
+            for (int j = i + 1; j < datas.length; j++) {
                 if (datas[j] < datas[i]) {
                     int temp = datas[j];
-                    datas[j]=datas[i];
-                    datas[i]=temp;
+                    datas[j] = datas[i];
+                    datas[i] = temp;
                 }
             }
         }
@@ -46,26 +46,26 @@ public class SelectSort implements Sort {
             return datas;
         }
         //找最大值换数据
-        for (int i =0;i < datas.length -1;i++) {
-            int minIndex=i;
-            int minData=datas[i];
-            for (int j = i+1;j<datas.length;j++) {
+        for (int i = 0; i < datas.length - 1; i++) {
+            int minIndex = i;
+            int minData = datas[i];
+            for (int j = i + 1; j < datas.length; j++) {
                 if (datas[j] > minData) {
-                    minIndex=j;
-                    minData=datas[j];
+                    minIndex = j;
+                    minData = datas[j];
                 }
             }
-            datas[minIndex]=datas[i];
-            datas[i]=minData;
+            datas[minIndex] = datas[i];
+            datas[i] = minData;
         }
 
         //找到大值就换
-        for (int i =0;i < datas.length -1;i++) {
-            for (int j = i+1;j<datas.length;j++) {
+        for (int i = 0; i < datas.length - 1; i++) {
+            for (int j = i + 1; j < datas.length; j++) {
                 if (datas[j] > datas[i]) {
                     int temp = datas[j];
-                    datas[j]=datas[i];
-                    datas[i]=temp;
+                    datas[j] = datas[i];
+                    datas[i] = temp;
                 }
             }
         }

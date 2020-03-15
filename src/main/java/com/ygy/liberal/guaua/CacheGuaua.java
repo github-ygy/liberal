@@ -27,21 +27,22 @@ public class CacheGuaua {
         LoadingCache<String, String> load=
                 CacheBuilder.newBuilder().maximumSize(10).build(cacheLoader);
 
-        Cache<String, String> cache=CacheBuilder.newBuilder().build();
+        Cache<String, String> cache = CacheBuilder.newBuilder().build();
 
         load.put("test1", "value1");
+
         System.out.println(load.getUnchecked("test1"));
         System.out.println(load.getUnchecked("test2"));
         System.out.println(cache.getIfPresent("test2"));
         try {
-            cache.get("test1", new Callable<String>() {
+            System.out.println("---" + cache.get("test1", new Callable<String>() {
                 @Override
                 public String call() throws Exception {
-                    return null;
+                    return "";
                 }
-            });
+            }));
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
 
     }

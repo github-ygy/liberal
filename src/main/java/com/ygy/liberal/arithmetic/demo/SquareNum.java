@@ -12,23 +12,44 @@ public class SquareNum {
         System.out.println(new SquareNum().square(2D));
     }
 
-    public double square(double data) {
-        double max=data;
-        double min=0D;
+    private double square(double data) {
+        double max = data;
+        double min = 0D;
         if (data < 1) {
-            max=1;
+            max = 1;
         } else {
-            min=1D;
+            min = 1D;
         }
-        double mid=min + (max - min) / 2;
+        double mid = min + (max - min) / 2;
         while (Math.abs(mid * mid - data) > 0.000001) {
             if (mid * mid > data) {
-                max=mid;
-            }else {
-                min=mid;
+                max = mid;
+            } else {
+                min = mid;
             }
-            mid=min + (max - min) / 2;
+            mid = min + (max - min) / 2;
         }
         return mid;
+    }
+
+    private int findXPosition(int[] arr, int x) {
+        if (arr == null || arr.length == 0) {
+            return -1;
+        }
+        int start = 0;
+        int end = arr.length - 1;
+        while (start <= end) {
+            int mid = start + end / 2;
+            if (arr[mid] > x) {
+                end = mid - 1;
+            }
+            if (arr[mid] < x) {
+                start = mid + 1;
+            }
+            if (arr[mid] == x) {
+                return mid;
+            }
+        }
+        return -1;
     }
 }

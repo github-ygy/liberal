@@ -5,23 +5,23 @@ package com.ygy.liberal.arithmetic.demo;
  * 最大连续的和
  */
 public class SerialMaxSum {
-    static int[] datas={0, 5, -5, 4, -5, 4, -7, 6, -1, 4, 3, 2};
+    static int[] datas = {0, 5, -5, 4, -5, 4, -7, 6, -1, 4, 3, 2};
 
     public static void main(String[] args) {
         getSeialMaxSum(datas);
     }
 
     private static void getSeialMaxSum(int[] datas) {
-        datas[0] =0;
-        int maxSum = datas[1],leftMinSum = 0;
-        for (int i = 1;i<datas.length;i++) {
+        datas[0] = 0;
+        int maxSum = datas[1], leftMinSum = 0;
+        for (int i = 1; i < datas.length; i++) {
             //LeftSum
-            datas[i] =datas[i] + datas[i - 1];
+            datas[i] = datas[i] + datas[i - 1];
             if (datas[i] - leftMinSum > maxSum) {
-                maxSum=datas[i] - leftMinSum;
+                maxSum = datas[i] - leftMinSum;
             }
             if (datas[i] < leftMinSum) {
-                leftMinSum=datas[i];
+                leftMinSum = datas[i];
             }
         }
         System.out.println(maxSum);

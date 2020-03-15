@@ -10,17 +10,17 @@ import java.util.concurrent.locks.ReentrantLock;
 public class DeadLockDemo {
 
 
-    private static Lock lock1=new ReentrantLock();
-    private static Lock lock2=new ReentrantLock();
+    private static Lock lock1 = new ReentrantLock();
+    private static Lock lock2 = new ReentrantLock();
 
     public static void main(String[] args) {
-        final CountDownLatch countDownLatch=new CountDownLatch(1);
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
         new Thread(
                 new Runnable() {
                     @Override
                     public void run() {
                         lock1.lock();
-                        System.out.println("获取锁1"+ Thread.currentThread().getName() +" :" + countDownLatch.getCount());
+                        System.out.println("获取锁1" + Thread.currentThread().getName() + " :" + countDownLatch.getCount());
                         try {
                             countDownLatch.await();
                         } catch (InterruptedException e) {
@@ -32,7 +32,7 @@ public class DeadLockDemo {
                         lock1.unlock();
                     }
                 }
-        ,"thread-1").start();
+                , "thread-1").start();
 
         new Thread(
                 new Runnable() {
@@ -40,14 +40,14 @@ public class DeadLockDemo {
                     public void run() {
                         lock2.lock();
                         countDownLatch.countDown();
-                        System.out.println("获取锁2 :" + Thread.currentThread().getName()+" :" + countDownLatch.getCount());
+                        System.out.println("获取锁2 :" + Thread.currentThread().getName() + " :" + countDownLatch.getCount());
                         lock1.lock();
                         System.out.println("获取锁1");
                         lock1.unlock();
                         lock2.unlock();
                     }
                 }
-        ,"thread-2").start();
+                , "thread-2").start();
     }
 
 }

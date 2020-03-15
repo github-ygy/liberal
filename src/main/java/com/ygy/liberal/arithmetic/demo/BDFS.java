@@ -26,14 +26,14 @@ public class BDFS {
     }
 
     private static void findDepth(Node head) {
-        LinkedList<Node> queue=Lists.newLinkedList();
+        LinkedList<Node> queue = Lists.newLinkedList();
         queue.add(head);
         int depth = 0;
         while (!queue.isEmpty()) {
-            int length=queue.size();
+            int length = queue.size();
             depth++;
             while (length-- > 0) {
-                Node poll=queue.poll();
+                Node poll = queue.poll();
                 if (poll.leftNode != null) {
                     queue.add(poll.leftNode);
                 }
@@ -46,12 +46,12 @@ public class BDFS {
     }
 
     private static void preDfs(Node head) {
-        List<Node> treeNodes=Lists.newArrayList();
-        Stack<Node> stack=new Stack<Node>();
+        List<Node> treeNodes = Lists.newArrayList();
+        Stack<Node> stack = new Stack<Node>();
         treeNodes.add(head);
         stack.add(head);
         while (!stack.isEmpty()) {
-            Node pop=stack.pop();
+            Node pop = stack.pop();
             System.out.println(pop);
             //左节点不为null
             if (pop.rightNode != null) {
@@ -64,39 +64,39 @@ public class BDFS {
     }
 
     private static void midDfs(Node head) {
-        Stack<Node> stack=new Stack<Node>();
+        Stack<Node> stack = new Stack<Node>();
         while (!stack.isEmpty() || head != null) {
             while (head != null) {
                 stack.push(head);
-                head=head.leftNode;
+                head = head.leftNode;
             }
 
             if (!stack.isEmpty()) {
-                head=stack.pop();
+                head = stack.pop();
                 System.out.println(head);
-                head=head.rightNode;
+                head = head.rightNode;
             }
 
         }
     }
 
     private static void postDfs(Node head) {
-        Stack<Node> stack=new Stack<Node>();
-        Node prev=head;
+        Stack<Node> stack = new Stack<Node>();
+        Node prev = head;
         while (!stack.isEmpty() || head != null) {
             while (head != null) {
                 stack.push(head);
-                head=head.leftNode;
+                head = head.leftNode;
             }
 
             if (!stack.isEmpty()) {
-                Node temp=stack.peek().rightNode;
-                if(temp == null||temp == prev){
+                Node temp = stack.peek().rightNode;
+                if (temp == null || temp == prev) {
                     head = stack.pop();
                     System.out.println(head);
-                    prev=head;
+                    prev = head;
                     head = null;
-                }else{
+                } else {
                     head = temp;
                 }
             }
@@ -133,9 +133,9 @@ public class BDFS {
     }
 
     private static Node buildNodeTree() {
-        Node head=new Node(10);
-        head.leftNode=new Node(5, new Node(3, new Node(1), new Node(4)), new Node(8, new Node(7), new Node(9)));
-        head.rightNode=new Node(15, new Node(13, new Node(11), new Node(14)), new Node(18, new Node(17), new Node(19)));
+        Node head = new Node(10);
+        head.leftNode = new Node(5, new Node(3, new Node(1), new Node(4)), new Node(8, new Node(7), new Node(9)));
+        head.rightNode = new Node(15, new Node(13, new Node(11), new Node(14)), new Node(18, new Node(17), new Node(19)));
         return head;
     }
 
@@ -148,13 +148,13 @@ public class BDFS {
         protected Node rightNode;
 
         public Node(int value) {
-            this.value=value;
+            this.value = value;
         }
 
         public Node(int value, Node leftNode, Node rightNode) {
-            this.value=value;
-            this.leftNode=leftNode;
-            this.rightNode=rightNode;
+            this.value = value;
+            this.leftNode = leftNode;
+            this.rightNode = rightNode;
         }
 
 

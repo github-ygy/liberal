@@ -11,10 +11,10 @@ public class Hongbao {
         sum(allocate2(100L, 100));
     }
 
-    private static void sum(Long [] datas) {
+    private static void sum(Long[] datas) {
         Long sum = 0L;
         for (Long data : datas) {
-            sum+=data;
+            sum += data;
             if (data < 1) {
                 System.out.println(" allocate wrong" + data);
             }
@@ -24,51 +24,51 @@ public class Hongbao {
     }
 
     private static Long[] allocate(Long amount, int nunmber) {
-        if (amount  < nunmber) {
+        if (amount < nunmber) {
             throw new IllegalArgumentException("分钱红包人数大于了红包金额");
         }
-        Long extraAllocateAmount = amount-nunmber;
-        Long [] amounts = new Long[nunmber];
+        Long extraAllocateAmount = amount - nunmber;
+        Long[] amounts = new Long[nunmber];
         Long alreadyAllocateAmount = 0L;
 
-        for (int i= 0;i< nunmber;i++) {
-            Long randomAmount=randomAmount(extraAllocateAmount - alreadyAllocateAmount, nunmber - i );
-            amounts[i]=1+randomAmount;
-            alreadyAllocateAmount+=randomAmount;
+        for (int i = 0; i < nunmber; i++) {
+            Long randomAmount = randomAmount(extraAllocateAmount - alreadyAllocateAmount, nunmber - i);
+            amounts[i] = 1 + randomAmount;
+            alreadyAllocateAmount += randomAmount;
         }
 
         return amounts;
     }
 
     private static Long[] allocate2(Long amount, int nunmber) {
-        if (amount  < nunmber) {
+        if (amount < nunmber) {
             throw new IllegalArgumentException("分钱红包人数大于了红包金额");
         }
-        Long extraAllocateAmount = amount-nunmber;
-        Long [] amounts = new Long[nunmber];
-        Long alreadyAllocateAmount=0L;
+        Long extraAllocateAmount = amount - nunmber;
+        Long[] amounts = new Long[nunmber];
+        Long alreadyAllocateAmount = 0L;
         //构建红包数的红包桶，预留每个桶有1分
-        for (int i= 0;i< nunmber;i++) {
+        for (int i = 0; i < nunmber; i++) {
             amounts[i] = 1L;
         }
-        Random random=new Random();
-        for (int i= 0;i< nunmber*10;i++) {
+        Random random = new Random();
+        for (int i = 0; i < nunmber * 10; i++) {
             //倍值均分获取公平的红包值
-            Long randomAmount=randomAmount(extraAllocateAmount - alreadyAllocateAmount, nunmber*10 - i);
-            alreadyAllocateAmount+=randomAmount;
+            Long randomAmount = randomAmount(extraAllocateAmount - alreadyAllocateAmount, nunmber * 10 - i);
+            alreadyAllocateAmount += randomAmount;
             //将获取的公平红包值随机的加到每个红包桶上(理论上每个桶的最大值为amount-nunmber分 最小值为1分)
-            amounts[random.nextInt(nunmber)]+=randomAmount;
+            amounts[random.nextInt(nunmber)] += randomAmount;
         }
         return amounts;
     }
 
 
     private static Long randomAmount(Long remainMoney, int remainNum) {
-        if (remainNum == 1 ||  remainMoney <= 1) {
+        if (remainNum == 1 || remainMoney <= 1) {
             return remainMoney;
         }
-        int data=new Random().nextInt(100);
-        return (remainMoney * 2 * data)/(100 * remainNum) ;
+        int data = new Random().nextInt(100);
+        return (remainMoney * 2 * data) / (100 * remainNum);
     }
 
     public static int[] allocate3(int amount, int number) {
@@ -81,7 +81,7 @@ public class Hongbao {
 
         // 一个人直接分完所有钱
         if (1 == number) {
-            return new int[] {amount};
+            return new int[]{amount};
         }
 
         int[] result = new int[number];
@@ -108,7 +108,7 @@ public class Hongbao {
             result[i + 1] = gapIndex[i + 1] - gapIndex[i] + 1;
         }
         // 最后一个分到的钱为：最后一个间隙后的数量 + 默认分配的1分
-        result[number - 1] = amount - gapIndex[number -2] + 1;
+        result[number - 1] = amount - gapIndex[number - 2] + 1;
         return result;
     }
 }

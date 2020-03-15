@@ -8,17 +8,17 @@ public class ArrayStack implements IStack {
 
     private int[] datas = null;
 
-    private int index ;
+    private int index;
 
     private int count;
 
     public ArrayStack(int count) {
         if (count <= 0) {
-            count=DEFAULT_SIZE;
+            count = DEFAULT_SIZE;
         }
-        this.datas=new int[count];
+        this.datas = new int[count];
         this.index = 0;
-        this.count=count;
+        this.count = count;
     }
 
     @Override
@@ -26,18 +26,17 @@ public class ArrayStack implements IStack {
         if (index == count) {
             return false;
         }
-        datas[index++]=data;
+        datas[index++] = data;
         return true;
     }
 
     @Override
     public int pop() {
-        if(index ==0) return Integer.MIN_VALUE;
-        int data=datas[index - 1];
+        if (index == 0) return Integer.MIN_VALUE;
+        int data = datas[index - 1];
         index--;
         return data;
     }
-
 
 
 }

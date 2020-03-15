@@ -17,7 +17,7 @@ public class TestIStack {
     }
 
     public static void testPop() {
-        IStack stack=createArrayStack(4);
+        IStack stack = createArrayStack(4);
         stack.push(4);
         stack.push(3);
         stack.push(2);
@@ -31,7 +31,7 @@ public class TestIStack {
     }
 
     public static void testPush() {
-        IStack stack=createArrayStack(4);
+        IStack stack = createArrayStack(4);
         Preconditions.checkArgument(stack.push(4));
         Preconditions.checkArgument(stack.push(4));
         Preconditions.checkArgument(stack.push(4));

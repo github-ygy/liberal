@@ -10,12 +10,12 @@ public class LinkedStack implements IStack {
 
     private SingleNode head;
 
-    private int count ;
+    private int count;
 
     private int length;
 
-    public LinkedStack (int count){
-        this.count=count;
+    public LinkedStack(int count) {
+        this.count = count;
         length = 0;
     }
 
@@ -25,9 +25,9 @@ public class LinkedStack implements IStack {
             return false;
         }
         if (head == null) {
-            head=new SingleNode(data, null);
+            head = new SingleNode(data, null);
         } else {
-            head=new SingleNode(data, head);
+            head = new SingleNode(data, head);
         }
         length++;
         return true;
@@ -38,8 +38,8 @@ public class LinkedStack implements IStack {
         if (head == null) {
             return Integer.MIN_VALUE;
         }
-        SingleNode temp=head;
-        head=head.next();
+        SingleNode temp = head;
+        head = head.next();
         return temp.value();
     }
 }

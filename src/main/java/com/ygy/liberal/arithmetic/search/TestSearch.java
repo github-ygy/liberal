@@ -23,23 +23,23 @@ public class TestSearch {
     }
 
     private static int[] createDatas() {
-        return new int[]{1,2,7,7,7,88};
+        return new int[]{1, 2, 7, 7, 7, 88};
     }
 
     private static int[] createDatas1() {
-        return new int[]{1,2,3,7,7,7,88};
+        return new int[]{1, 2, 3, 7, 7, 7, 88};
     }
 
     private static int[] createDatas2() {
-        return new int[]{1,2,3,4,7,7,7,88};
+        return new int[]{1, 2, 3, 4, 7, 7, 7, 88};
     }
 
     private static int[] createDatas3() {
-        return new int[]{1,2,3,4,5,7,7,7,88};
+        return new int[]{1, 2, 3, 4, 5, 7, 7, 7, 88};
     }
 
     private static int[] createDatas4() {
-        return new int[]{1,2,3,4,5,6,7,7,7,88};
+        return new int[]{1, 2, 3, 4, 5, 6, 7, 7, 7, 88};
     }
 
 }

@@ -17,36 +17,36 @@ public class MergeSort implements Sort {
         if (start >= end) {
             return datas;
         }
-        int mid=(start + end + 1) / 2;
-        merge(datas, start, mid -1 );
+        int mid = (start + end + 1) / 2;
+        merge(datas, start, mid - 1);
         merge(datas, mid, end);
         mergeDatas(datas, start, end);
         return datas;
     }
 
     private void mergeDatas(int[] datas, int start, int end) {
-        int[] copy=new int[end - start + 1];
-        int mid =(start + end + 1) / 2;
+        int[] copy = new int[end - start + 1];
+        int mid = (start + end + 1) / 2;
         int temp = mid;
         int index = 0;
-        int starter=start;
+        int starter = start;
         while (start <= temp - 1 && mid <= end) {
             if (datas[start] < datas[mid]) {
-                copy[index++]=datas[start++];
+                copy[index++] = datas[start++];
                 continue;
             }
-            copy[index++]=datas[mid++];
+            copy[index++] = datas[mid++];
         }
-        while (start <= temp -1) {
-            copy[index++]=datas[start++];
+        while (start <= temp - 1) {
+            copy[index++] = datas[start++];
         }
         while (mid <= end) {
-            copy[index++]=datas[mid++];
+            copy[index++] = datas[mid++];
         }
-        for (int i= 0;i<copy.length;i++) {
-            datas[starter++]=copy[i];
+        for (int i = 0; i < copy.length; i++) {
+            datas[starter++] = copy[i];
         }
-        copy=null;
+        copy = null;
     }
 
     @Override
