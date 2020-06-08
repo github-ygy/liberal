@@ -23,6 +23,63 @@ public class BDFS {
         //postDfs(buildNodeTree());
 
         findDepth(buildNodeTree());
+        findMinDepth(buildNodeTree());
+        findMaxDepth(buildNodeTree());
+    }
+
+    private static void findMaxDepth(Node node) {
+        int depth = 0;
+        if (node == null) {
+            return ;
+        }
+        LinkedList<Node> linkedList = Lists.newLinkedList();
+        linkedList.add(node);
+        while (!linkedList.isEmpty()) {
+            int size = linkedList.size();
+            depth++;
+            while (size > 0) {
+                Node first = linkedList.removeFirst();
+                if (first.leftNode != null) {
+                    linkedList.add(first.leftNode);
+                }
+                if (first.rightNode != null) {
+                    linkedList.add(first.rightNode);
+                }
+                size--;
+            }
+        }
+        System.out.println(depth);
+    }
+
+    private static void findMinDepth(Node node) {
+        int depth = 0;
+        if (node == null) {
+            return ;
+        }
+        LinkedList<Node> linkedList = Lists.newLinkedList();
+        linkedList.add(node);
+        boolean isFind = false;
+        while (!linkedList.isEmpty()) {
+            int size = linkedList.size();
+            depth++;
+            while (size-- > 0) {
+                Node first = linkedList.removeFirst();
+                if (first.leftNode == null && first.rightNode == null) {
+                    isFind = true;
+                    break;
+                }
+                if (first.leftNode != null) {
+                    linkedList.add(first.leftNode);
+                }
+                if (first.rightNode != null) {
+                    linkedList.add(first.rightNode);
+                }
+            }
+            if (isFind) {
+                break;
+            }
+        }
+        System.out.println(depth);
     }
 
     private static void findDepth(Node head) {
@@ -138,6 +195,8 @@ public class BDFS {
         head.rightNode = new Node(15, new Node(13, new Node(11), new Node(14)), new Node(18, new Node(17), new Node(19)));
         return head;
     }
+
+
 
     private static class Node {
 

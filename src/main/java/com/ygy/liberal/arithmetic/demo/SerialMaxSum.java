@@ -12,47 +12,21 @@ public class SerialMaxSum {
     }
 
     private static void getSeialMaxSum(int[] datas) {
-        datas[0] = 0;
-        int maxSum = datas[1], leftMinSum = 0;
-        for (int i = 1; i < datas.length; i++) {
-            //LeftSum
-            datas[i] = datas[i] + datas[i - 1];
-            if (datas[i] - leftMinSum > maxSum) {
-                maxSum = datas[i] - leftMinSum;
+        int i;
+        int maxSum = 0;
+        int curSum = 0;
+        for (i = 0; i < datas.length; i++) {
+            curSum += datas[i];
+            if (curSum > maxSum) {
+                maxSum = curSum;
             }
-            if (datas[i] < leftMinSum) {
-                leftMinSum = datas[i];
+            //如果累加和出现小于0的情况，
+            //则和最大的子序列肯定不可能包含前面的元素，
+            //这时将累加和置0，从下个元素重新开始累加
+            if (curSum < 0) {
+                curSum = 0;
             }
         }
         System.out.println(maxSum);
-        System.out.println(leftMinSum);
-        //num[0] = 0;
-        //int ans = num[1], lmin = 0;
-        //for(int i = 1; i <= N; i++) {
-        //    num[i] += num[i - 1];
-        //    if(num[i] - lmin > ans)
-        //        ans = num[i] - lmin;
-        //    if(num[i] < lmin)
-        //        lmin = num[i];
-        //}
-
-        //num[0] = 0;
-        //int ans = num[1];
-        //for(int i = 1; i <= N; i++) {
-        //    if(num[i - 1] > 0) num[i] += num[i - 1];
-        //    else num[i] += 0;
-        //    if(num[i] > ans) ans = num[i];
-        //}
-        //
-        //int N, n, s, ans, m = 0;
-        //
-        //ans = s = n; //把ans初始化为序列中的的第一个数
-        //for(int i = 1; i < N; i++) {
-        //    if(s < m) m = s;
-        //    scanf("%d", &n);
-        //    s += n;
-        //    if(s - m > ans)
-        //        ans = s - m;
-        //}
     }
 }

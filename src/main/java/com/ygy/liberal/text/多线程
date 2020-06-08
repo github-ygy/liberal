@@ -43,6 +43,8 @@ threadLocalMap是如何解决hash冲突问题?
     set时:hash计算key槽，如果为空则无冲突插入，则遍历数组，向后找到第一个空闲空间插入数据
     get时，hash计算key槽，如果有值则冲突，进行遍历数组，找到key相同，如果找到第一个空闲空间则清除null数据同时返回空
 
+fastThreadLocal 通过计算每个 threadLocal的index索引来确定数组位置来达到o1复杂度的读取和写入
+
  如何将threadlocal在线程池中传递？
     TransmittableThreadLocal进行池化复用的线程池传递。
     用ttlrunnable增强runnable，构造runnable时，将静态容器hold(InheritableThreadLocal<Map<TransmittableThreadLocal<?>, ?)
@@ -64,6 +66,10 @@ threadLocalMap是如何解决hash冲突问题?
         d.keepAliveTime如果开启允许超时或者 wc >corePoolSize
             1.超时时间获取到数据，则继续执行
             2.超时时间未获取到数据，则进行销毁线程
+            实现机制是通过Worker运行时从队列获取任务来判断的:
+            getTask():
+                判断work数是否达到了核心线程数,则从队列获取数据时 workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS)
+                keepAliveTime时间内未获取数据,则将worker将退出任务执行 processWorkerExit()
     线程封装对象worker是Thread子类，while循环从队列中获取数据
     corePoolSize - 池中所保存的线程数，包括空闲线程。
     maximumPoolSize-池中允许的最大线程数。
@@ -196,6 +202,32 @@ aqs是什么？ 博客：https://www.cnblogs.com/waterystone/p/4920797.html
         3.再次获取当前时间。
         4.把两个时间相减，计算 获取锁 的过程是否消耗了太长时间，导致锁已经过期了。如果没过期，
         5.客户端持有锁去访问共享资源。
+
+        //可重入 keys 为key ;ARGV[1] 过期时间 ;ARGV[2] 进程id + 线程id; counter;
+        //加锁
+        RedisScript<Long> script = RedisScript.of(
+        					"if (redis.call('exists', KEYS[1]) == 0) then " +
+        							"redis.call('hset', KEYS[1], ARGV[2], 1); " +
+        							"redis.call('pexpire', KEYS[1], ARGV[1]); " +
+        							"return nil; " +
+        							"end; " +
+        							"if (redis.call('hexists', KEYS[1], ARGV[2]) >= 1) then " +
+        							"redis.call('hincrby', KEYS[1], ARGV[2], 1); " +
+        							"redis.call('pexpire', KEYS[1], ARGV[1]); " +
+        							"return nil; " +
+        							"end; " +
+        							"return redis.call('pttl', KEYS[1]);", Long.class);
+
+        //解锁
+        RedisScript<Long> script = RedisScript.of(
+        							"local counter = redis.call('hincrby', KEYS[1], ARGV[1], -1); " +
+        							"if (counter <= 0) then " +
+        							"redis.call('del', KEYS[1]); " +
+        							"return 0; " +
+        							"else " +
+        							"return counter;" +
+        							"end; " +
+        							"return nil;", Long.class);
 
 
    zk

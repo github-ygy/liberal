@@ -19,14 +19,14 @@ public class ListNodeOperate {
         //校验回文
         //System.out.println(checkIsCanReverse(head));
         //1.反转链表
-        //printNode(reverseNode(head));
+        printNode(reverseNode2(head));
         //2.校验环
         //SingleNode last = getLastNode(head);
         //last.next(head);
         //System.out.println(checkIsRing(head));
         //3.两个有序链表的合并
-        SingleNode head2 = createDoubleNode(new int[]{2, 3, 8});
-        printNode(mergeOrderNode(head, head2));
+        //SingleNode head2 = createDoubleNode(new int[]{2, 3, 8});
+        //printNode(mergeOrderNode(head, head2));
 
     }
 
@@ -90,10 +90,9 @@ public class ListNodeOperate {
     private static SingleNode reverseNode(SingleNode baseNode) {
         SingleNode head = baseNode;
         //反转node
-        SingleNode temp = null;
         SingleNode prev = null;
         while (head != null) {
-            temp = head.next();
+            SingleNode temp = head.next();
             head.next(prev);
             prev = head;
             head = temp;
@@ -105,6 +104,18 @@ public class ListNodeOperate {
     //34   2 1
     //4    3 2 1
     //null 4 3 2 1
+
+    private static SingleNode reverseNode2(SingleNode baseNode) {
+        SingleNode head = baseNode;
+        SingleNode temp = null;
+        while (head != null) {
+            SingleNode next = head.next();
+            head.next(temp);
+            temp = head;
+            head = next;
+        }
+        return temp;
+    }
 
     private static SingleNode reverseNode1(SingleNode baseNode) {
         SingleNode head = baseNode;

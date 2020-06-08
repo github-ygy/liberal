@@ -24,6 +24,7 @@ public class MergeSort implements Sort {
         return datas;
     }
 
+    //合并两个有序数组的问题
     private void mergeDatas(int[] datas, int start, int end) {
         int[] copy = new int[end - start + 1];
         int mid = (start + end + 1) / 2;

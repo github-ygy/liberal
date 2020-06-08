@@ -31,6 +31,7 @@ public class TestSort {
 
     private static int[] createDatas() {
         return new int[]{1, 5, 4, 3, 6, 2};
+        //return new int[]{1, 2, 3, 4, 5, 6};
     }
 
     public static void print(int[] datas) {
