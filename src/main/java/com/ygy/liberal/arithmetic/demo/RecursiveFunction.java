@@ -1,6 +1,10 @@
 package com.ygy.liberal.arithmetic.demo;
 
+import com.google.common.collect.Lists;
+
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * 递归函数
@@ -19,9 +23,10 @@ public class RecursiveFunction {
         //假设有四种面额的钱币，1 元、2 元、5 元和 10 元，而您一共给我 10 元，
         // 那您可以奖赏我 1 张 10 元，或者 10 张 1 元，或者 5 张 1 元外加 1 张 5 元等等。
         // 如果考虑每次奖赏的金额和先后顺序，那么最终一共有多少种不同的奖赏方式呢？”
-        find2(0, 10, new ArrayList<Integer>());
-        find3(10, new ArrayList<Integer>());
-
+        //find2(0, 10, new ArrayList<Integer>());
+        //find3(10, new ArrayList<Integer>());
+        findF(100, Lists.newArrayList(80, 30, 20), Lists.newArrayList());
+        findF(120, Lists.newArrayList(80, 30, 20), Lists.newArrayList());
     }
 
     public static int[] rewards = {1, 2, 5, 10}; // 四种面额的纸币
@@ -87,4 +92,34 @@ public class RecursiveFunction {
             }
         }
     }
+
+
+
+    private static void findF(int total, List<Integer> account, List<Integer> result) {
+        if (total == 0) {
+            System.out.println(result);
+            return;
+        } else {
+            int maxMoney = 0;
+            for (Integer money : account) {
+                maxMoney = Math.max(maxMoney, money);
+            }
+            if (maxMoney >= total) {
+                result.add(total);
+                findF(0, account, result);
+            }else{
+                List<Integer> remainAccount = new ArrayList<>();
+                for (Integer money : account) {
+                    if (Objects.equals(maxMoney, money)) {
+                        continue;
+                    }
+                    remainAccount.add(money);
+                }
+                result.add(maxMoney);
+                findF(total - maxMoney, remainAccount, result);
+            }
+        }
+    }
+
+
 }
