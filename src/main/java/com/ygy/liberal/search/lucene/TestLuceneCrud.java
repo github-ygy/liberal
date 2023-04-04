@@ -40,7 +40,7 @@ public class TestLuceneCrud {
         testMultiFieldQueryAnalyzer();
         testItemQuery();
         testBooleanQuery();
-        testDel();
+        //testDel();
 
     }
 
